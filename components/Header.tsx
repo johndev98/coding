@@ -5,7 +5,7 @@ import { useState } from "react";
 import LoginModal from "./LoginModal";
 import { createClient } from "@/lib/supabase/client";
 
-export default function Header({ user }: { user: any }) {
+export default function Header({ user, profile }: { user: any; profile: any }) {
   const [open, setOpen] = useState(false);
   const supabase = createClient();
 
@@ -32,12 +32,12 @@ export default function Header({ user }: { user: any }) {
                 <button className="flex items-center gap-2 rounded-full border px-3 py-1">
                   <img
                     src={
-                      user.user_metadata?.avatar_url ||
+                      profile?.avatar_url ??
                       "https://www.gravatar.com/avatar/?d=mp"
                     }
                     className="h-8 w-8 rounded-full"
                   />
-                  <span className="text-sm">{user.email}</span>
+                  <span className="text-sm">{profile?.email}</span>
                 </button>
 
                 <div className="absolute right-0 mt-2 hidden w-40 rounded-lg border bg-white shadow-md group-hover:block">
