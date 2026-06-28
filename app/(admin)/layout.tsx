@@ -9,11 +9,8 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log("LAYOUT: before requireAdmin");
   const admin = await requireAdmin();
-console.log("LAYOUT: after requireAdmin", admin);
   if (!admin) {
-     console.log("LAYOUT: redirect");
     redirect("/admin-login");
   }
   return (

@@ -4,9 +4,7 @@ import LogoutButton from "../ui/LogoutButton";
 import { requireAdmin } from "../requireAdmin";
 
 export default async function AdminPage() {
-  console.log("PAGE: before requireAdmin");
   const admin = await requireAdmin();
-  console.log("PAGE: after requireAdmin", admin);
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Admin Dashboard</h1>
