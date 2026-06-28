@@ -1,6 +1,6 @@
-
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 
 export default async function AdminLayout({
   children,
@@ -8,34 +8,51 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // ❌ chưa login → qua trang login admin
-  if (!user) {
-    redirect("/admin-login");
-  }
+  if (!user) redirect("/admin-login");
 
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", user.id)
     .single();
 
-  // ❌ không phải admin → thoát khỏi /admin
-  if (profile?.role !== "admin") {
-    redirect("/admin-login"); // hoặc redirect("/")
+  if (error || !profile || profile.role !== "admin") {
+    redirect("/admin-login");
   }
 
   return (
-    <div>
-      <div className="border-b p-4 font-bold">
-        Admin Dashboard
-      </div>
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <aside className="w-64 border-r bg-gray-50 p-4">
+        <h2 className="mb-6 text-lg font-bold">Admin</h2>
+        <nav className="space-y-2">
+          <Link
+            href="/admin"
+            className="block rounded-md px-3 py-2 hover:bg-gray-200"
+          >
+            Dashboard
+          </Link>
+          <Link
+            href="/admin/users"
+            className="block rounded-md px-3 py-2 hover:bg-gray-200"
+          >
+            Users
+          </Link>
+          <Link
+            href="/admin/courses"
+            className="block rounded-md px-3 py-2 hover:bg-gray-200"
+          >
+            Courses
+          </Link>
+        </nav>
+      </aside>
 
-      {children}
+      {/* Main content */}
+      <main className="flex-1 p-6">{children}</main>
     </div>
   );
 }
