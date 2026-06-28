@@ -1,3 +1,5 @@
+// app/(auth)/admin-login/page.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -13,11 +15,13 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     setLoading(true);
     setError("");
 
+    // Đăng nhập
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -29,24 +33,22 @@ export default function AdminLoginPage() {
       return;
     }
 
-    const user = data.user;
-
-    // check role
-    const { data: profile } = await supabase
+    // Kiểm tra quyền
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("role")
-      .eq("id", user.id)
+      .eq("id", data.user.id)
       .single();
 
-    if (profile?.role !== "admin") {
+    if (profileError || profile?.role !== "admin") {
       await supabase.auth.signOut();
-      setError("Bạn không có quyền admin");
+
+      setError("Bạn không có quyền truy cập trang quản trị");
       setLoading(false);
       return;
     }
 
-    router.push("/admin");
-    router.refresh();
+    router.replace("/admin");
   };
 
   return (

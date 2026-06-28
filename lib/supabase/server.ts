@@ -1,3 +1,4 @@
+// lib/supabase/server.tsx
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 

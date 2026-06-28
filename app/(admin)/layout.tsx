@@ -1,29 +1,21 @@
+// app/(admin)/layout.tsx
+
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { requireAdmin } from "./requireAdmin";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/admin-login");
-
-  const { data: profile, error } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (error || !profile || profile.role !== "admin") {
+  console.log("LAYOUT: before requireAdmin");
+  const admin = await requireAdmin();
+console.log("LAYOUT: after requireAdmin", admin);
+  if (!admin) {
+     console.log("LAYOUT: redirect");
     redirect("/admin-login");
   }
-
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
